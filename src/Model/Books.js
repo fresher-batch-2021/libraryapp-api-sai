@@ -8,6 +8,7 @@ const BookSchema = new Schema({
     price: { type: Number, required: true },
     quantity: { type: Number, required: true },
     image:{type:String,required:true},
+    description:{type:String,required:true},
     createdby: { type: Schema.Types.ObjectId, ref: "user" }
 })
 module.exports = Book = mongoose.model('book', BookSchema)

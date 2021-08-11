@@ -7,8 +7,7 @@ const order=require('./routers/orders');
 
 require('dotenv').config();
 let port = process.env.PORT;
-let db = process.env.DB
-
+let db =process.env.DB
 const app = express();
 app.use(express.json());
 app.use(cors());

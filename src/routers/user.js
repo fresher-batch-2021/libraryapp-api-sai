@@ -2,7 +2,17 @@ const express = require('express');
 const router = express.Router();
 const User = require("../Model/User");
 const bcrypt = require('bcryptjs');
-const jwt =require('jsonwebtoken');
+
+router.post('/add',async(req,res)=>{
+    try {
+        const adduser=await User(req.body);
+        await adduser.save();
+        res.status(201).send(adduser);
+        
+    } catch (error) {
+        res.status(500).send({error:error.message})
+    }
+})
 
 router.post('/addUser', async (req, res) => {
 	const email =await  User.findOne({email:req.body.email})
@@ -16,16 +26,16 @@ console.log(email);
 		const newUser = new User({
 					name:req.body.name,
 					email:req.body.email,
-                    phone:req.body.phone,
 					password:hashedPass,
 					role:req.body.role
 			})
 			try {
 					  console.log(newUser);
 					 newUser.save()
-					.then((e)=>res.status(201).send({data:e,message:"Registered successfully"}))
+					.then((e)=>res.status(201).send({data:e,message:"Registered successful"}))
 					.catch((e)=>console.log(e));
 					} catch (err) {
+                        console.error(err);
 					res.status(500).send({error:err.message});
 				}
 		
@@ -50,8 +60,11 @@ router.post('/login',(req,res)=>{
                     })
                 }
                 if(result){
-                    let token =jwt.sign({name:user.name},'verySecret',{expiresIn:'1h'})
-                    res.json({message:"login successfull",token});
+                    console.log(user.name)
+                    const userData={user_id:user._id,name:user.name,email:user.email,userRole:user.role}
+                    console.log(userData);
+                    
+                    res.json({message:"login successful",userData});
                     
                 }else{
                     res.json({
@@ -76,5 +89,6 @@ router.get('/get-all-users',async(req,res)=>{
          res.status.send({error:error.message});
     }
 })
+
 
 module.exports = router;

@@ -75,13 +75,13 @@ router.delete('/delete-book/:id', async (req, res) => {
 		res.status(500).send({ error: error.message });
 	}
 })
-router.patch('/update-book/:id', async (req, res) => {
+router.put('/update-book/:id', async (req, res) => {
 
 	const updates = Object.keys(req.body);
 	console.log(updates);
-	const allowedUpdates = ['bookName', 'authorName', 'category', 'price', 'quantity'];
-	const isValidOperation = updates.every((update) => {
-		return allowedUpdates.includes(update);
+	const allowedUpdates = ['bookName', 'authorName', 'category', 'price', 'quantity','description','image'];
+	const isValidOperation = allowedUpdates.every((fieldName) => {
+		return updates.includes(fieldName);
 	});
 
 	if (!isValidOperation) {
@@ -105,5 +105,17 @@ router.patch('/update-book/:id', async (req, res) => {
 	}
 
 });
+
+router.get("/get-book-by-id/:id",async(req,res)=>{
+	try {
+		const bookId = req.params.id;
+		const bookDetails=await Book.findById(bookId);
+		console.log(bookDetails)
+		res.status(201).send(bookDetails)
+	} catch (error) {
+		res.status(500).send({error:error.message});
+		console.log(error)
+	}
+})
 
 module.exports = router;
