@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-
 const Book = require('../Model/Books');
+const Order= require('../Model/Orders');
 
 router.post('/add-book', async (req, res) => {
 	const newbook = new Book(req.body);
@@ -14,7 +14,7 @@ router.post('/add-book', async (req, res) => {
 			} else if (!result) {
 				try {
 					newbook.save()
-						.then((e) => res.status(201).send( "Book Added Successfully"))
+						.then((e) => res.status(201).send("Book Added Successfully"))
 						.catch((e) => console.log(e))
 				} catch (err) {
 					res.status(500).send("Enter All the Fields");
@@ -32,8 +32,16 @@ router.post('/add-book', async (req, res) => {
 
 router.post('/get-all-books', async (req, res) => {
 	try {
-		const allBooks = await Book.find();
-		res.status(201).send(allBooks);
+		let allBooks = await Book.find();
+		let active = req.query.status;
+
+
+		if (active) {
+			allBooks = allBooks.filter(obj => obj.status === active);
+		}
+		console.log(allBooks)
+		res.send(allBooks)
+
 	} catch (error) {
 		res.status(500).send({ error: error.message })
 	}
@@ -62,14 +70,21 @@ router.post('/author-book', async (req, res) => {
 
 router.delete('/delete-book/:id', async (req, res) => {
 	try {
-		const deleteBook = await Book.findById(req.params.id)
-		if (!deleteBook) {
-			res.status(201).send("No book found");
-		}
-		else {
-			deleteBook.remove();
-			res.status(201).send(deleteBook);
-		}
+		Book.find(req.params.id, (err, result) => {
+			if (err) {
+				console.log(err)
+			} else {
+				Order.findOne({$and:[{ bookId: { $eq: req.params.id } }]}, (err, q) => {
+					if(err){
+						console.log(err)
+					}else{
+						console.log(q);
+					}
+				})
+				console.log(result);
+			}
+			
+		})
 
 	} catch (error) {
 		res.status(500).send({ error: error.message });
@@ -79,7 +94,7 @@ router.put('/update-book/:id', async (req, res) => {
 
 	const updates = Object.keys(req.body);
 	console.log(updates);
-	const allowedUpdates = ['bookName', 'authorName', 'category', 'price', 'quantity','description','image'];
+	const allowedUpdates = ['bookName', 'authorName', 'category', 'price', 'quantity', 'description', 'image'];
 	const isValidOperation = allowedUpdates.every((fieldName) => {
 		return updates.includes(fieldName);
 	});
@@ -105,15 +120,49 @@ router.put('/update-book/:id', async (req, res) => {
 	}
 
 });
+router.put('/update-book-status/:id', async (req, res) => {
 
-router.get("/get-book-by-id/:id",async(req,res)=>{
+	const updates = Object.keys(req.body);
+	console.log(updates);
+	const allowedUpdates = ['status'];
+	const isValidOperation = updates.every((update) => {
+		let exist = allowedUpdates.includes(update);
+		if (!exist) {
+			console.log(update);
+		}
+		return exist;
+	});
+
+	if (!isValidOperation) {
+		return res.status(400).send({ error: 'Invalid Operation' });
+	}
+
+	try {
+		const book = await Book.findById(req.params.id)
+		console.log(book);
+		if (!book) {
+
+			return res.status(404).send({ error: 'book not found' });
+		}
+		updates.forEach((update) => {
+			book[update] = req.body[update];
+		});
+		await book.save();
+		res.send(book);
+	} catch (err) {
+		res.status(500).send({ error: err.message });
+	}
+
+});
+
+router.get("/get-book-by-id/:id", async (req, res) => {
 	try {
 		const bookId = req.params.id;
-		const bookDetails=await Book.findById(bookId);
+		const bookDetails = await Book.findById(bookId);
 		console.log(bookDetails)
 		res.status(201).send(bookDetails)
 	} catch (error) {
-		res.status(500).send({error:error.message});
+		res.status(500).send({ error: error.message });
 		console.log(error)
 	}
 })

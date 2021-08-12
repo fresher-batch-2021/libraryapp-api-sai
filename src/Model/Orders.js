@@ -21,6 +21,10 @@ const OrderSchema = new Schema({
     fine:{
         type:String,
         default:0
+    },
+    status:{
+        type:String,
+        default:"ordered"
     }
 },{timestamps:true});
 
