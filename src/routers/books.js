@@ -68,26 +68,45 @@ router.post('/author-book', async (req, res) => {
 	}
 })
 
-router.delete('/delete-book/:id', async (req, res) => {
+router.delete('/delete-bo/:id',async(req,res)=>{
 	try {
-		Book.find(req.params.id, (err, result) => {
-			if (err) {
+		const deletebooks= await Book.findById(req.params.id,(err,b)=>{
+			if(err){
 				console.log(err)
-			} else {
-				Order.findOne({$and:[{ bookId: { $eq: req.params.id } }]}, (err, q) => {
+			}else{
+				Order.findOne({bookId:{$eq:req.params.id}},(err,o)=>{
 					if(err){
-						console.log(err)
+						console.log(err);
 					}else{
-						console.log(q);
+						const orderDetails=o
+						if(orderDetails.status==='ordered'||'borrowed'){
+							res.status(201).send("book ordered")
+							return false;
+						}
+						// console.log(orderDetails);
 					}
 				})
-				console.log(result);
+				// console.log(b)
 			}
-			
 		})
+		console.log(deletebooks);
 
 	} catch (error) {
-		res.status(500).send({ error: error.message });
+		
+	}
+})
+
+router.delete('/delete-book/:id',async(req,res)=>{
+	try {
+		const deleteBook=await Book.findById(req.params.id)
+		if(!deleteBook){
+			return("book not found");
+		}else{
+			deleteBook.remove();
+			res.status(200).send(deleteBook);
+		}
+	} catch (error) {
+		res.status(500).send({err:error.message})
 	}
 })
 router.put('/update-book/:id', async (req, res) => {
