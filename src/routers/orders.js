@@ -16,6 +16,7 @@ router.post('/place-orders', async (req, res) => {
         res.status(200).send(book)
     }
     console.log(order)
+    order.save()
   } catch (error) {
       res.status(500).send({error:error.message})
   }
