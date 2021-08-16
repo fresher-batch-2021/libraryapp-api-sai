@@ -68,7 +68,7 @@ router.post('/author-book', async (req, res) => {
 	}
 })
 
-router.delete('/delete-bo/:id',async(req,res)=>{
+router.delete('/delete-book/:id',async(req,res)=>{
 	try {
 		const deletebooks= await Book.findById(req.params.id,(err,b)=>{
 			if(err){
@@ -79,36 +79,26 @@ router.delete('/delete-bo/:id',async(req,res)=>{
 						console.log(err);
 					}else{
 						const orderDetails=o
-						if(orderDetails.status==='ordered'||'borrowed'){
+						console.log("order",orderDetails);
+						if(orderDetails == null ){
+							res.status(500).send("book deleted");
+		                    deletebooks.remove()
+						}
+						else if(orderDetails.status==='ordered'||'borrowed'){
 							res.status(201).send("book ordered")
 							return false;
+						}else{
+						res.status(500).send("book not found");
 						}
-						// console.log(orderDetails);
 					}
 				})
-				// console.log(b)
 			}
 		})
-		console.log(deletebooks);
-
 	} catch (error) {
-		
+		res.status(500).send({error:error.message})
 	}
 })
 
-router.delete('/delete-book/:id',async(req,res)=>{
-	try {
-		const deleteBook=await Book.findById(req.params.id)
-		if(!deleteBook){
-			return("book not found");
-		}else{
-			deleteBook.remove();
-			res.status(200).send(deleteBook);
-		}
-	} catch (error) {
-		res.status(500).send({err:error.message})
-	}
-})
 router.put('/update-book/:id', async (req, res) => {
 
 	const updates = Object.keys(req.body);

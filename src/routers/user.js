@@ -4,17 +4,6 @@ const User = require("../Model/User");
 const bcrypt = require('bcryptjs');
 
 
-router.post('/add',async(req,res)=>{
-    try {
-        const adduser=await User(req.body);
-        await adduser.save();
-        res.status(201).send(adduser);
-        
-    } catch (error) {
-        res.status(500).send({error:error.message})
-    }
-})
-
 router.post('/addUser', async (req, res) => {
 	const email =await  User.findOne({email:req.body.email})
 console.log(email);
