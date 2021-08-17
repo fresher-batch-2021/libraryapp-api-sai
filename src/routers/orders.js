@@ -32,7 +32,7 @@ router.post('/place-orders', async (req, res) => {
 });
 router.get('/order-details/:id', async (req, res) => {
     try {
-        const orderdetails = await Order.find({ userId: req.params.id }).populate('bookId');
+        const orderdetails = await Order.find({ userId: req.params.id }).populate('bookId').sort({createdAt:"desc"});
         console.log(orderdetails)
         res.status(201).send(orderdetails);
     } catch (error) {
@@ -65,10 +65,17 @@ console.log(bookId)
            let fine=0
            if(noOfDaysDelayed > 0){
              fine = orderDetails.fine=perDayFine * noOfDaysDelayed;
+           }else{
+               res.send('no fine');
            }
             console.log(fine)
             console.log(dueDate) 
             console.log(orderDetails)
+            orderDetails.save()
+            res.status.returnDate(201).send(orderDetails);
+        }
+        else{
+            res.send("order not found")
         }
     } catch (error) {
         res.status(500).send({error:error.message})
