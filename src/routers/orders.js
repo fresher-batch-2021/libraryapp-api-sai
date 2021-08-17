@@ -66,13 +66,13 @@ console.log(bookId)
            if(noOfDaysDelayed > 0){
              fine = orderDetails.fine=perDayFine * noOfDaysDelayed;
            }else{
-               res.send('no fine');
+               res.send('Returned successfully');
            }
             console.log(fine)
             console.log(dueDate) 
             console.log(orderDetails)
             orderDetails.save()
-            res.status.returnDate(201).send(orderDetails);
+            res.status.returnDate(201).send("pay fine Rs:"+fine);
         }
         else{
             res.send("order not found")
