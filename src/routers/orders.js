@@ -62,9 +62,12 @@ console.log(bookId)
           
            const noOfDaysDelayed= dayjs().diff(dueDate,'days') ;
            const perDayFine = 10;
-           const fine = orderDetails.fine=perDayFine * noOfDaysDelayed;
+           let fine=0
+           if(noOfDaysDelayed > 0){
+             fine = orderDetails.fine=perDayFine * noOfDaysDelayed;
+           }
             console.log(fine)
-            console.log(dueDate)
+            console.log(dueDate) 
             console.log(orderDetails)
         }
     } catch (error) {

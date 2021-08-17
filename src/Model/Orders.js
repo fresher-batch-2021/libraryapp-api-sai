@@ -20,7 +20,7 @@ const OrderSchema = new Schema({
     },
     returnDate:{
         type:String,
-        default:0
+        default:null
     },
     fine:{
         type:String,
