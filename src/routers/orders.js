@@ -12,6 +12,7 @@ router.post('/place-orders', async (req, res) => {
             bookId: req.body.bookId,
             orderDate: req.body.orderDate,
             dueDate: date,
+            returnDate:req.body.returnDate,
             fine: req.body.fine,
             status: req.body.status
         })
