@@ -5,8 +5,7 @@ const Order = require('../Model/Orders');
 const dayjs = require('dayjs')
 router.post('/place-orders', async (req, res) => {
     try {
-        const dueDate = dayjs().add(10, 'days').format('YYYY/MM/DD')
-        console.log(date)
+        const dueDate = dayjs().add(10, 'days').format('YYYY-MM-DD')
         const order = await Order({
             userId: req.body.userId,
             bookId: req.body.bookId,
@@ -58,10 +57,12 @@ console.log(bookId)
         const orderDetails= await Order.findOne({$and:[{userId:userId},{bookId:bookId}]})
         console.log(orderDetails)
         if(orderDetails){
-           const returndate= orderDetails.returnDate= new Date().toJSON();
-            const dueDate=orderDetails.dueDate
+            orderDetails.returnDate= new Date().toJSON();
+            const dueDate=orderDetails.dueDate;
           
-           const fine= dayjs().diff(new Date(dueDate)) 
+           const noOfDaysDelayed= dayjs().diff(dueDate,'days') ;
+           const perDayFine = 10;
+           const fine = orderDetails.fine=perDayFine * noOfDaysDelayed;
             console.log(fine)
             console.log(dueDate)
             console.log(orderDetails)
