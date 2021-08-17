@@ -11,7 +11,7 @@ router.post('/place-orders', async (req, res) => {
             userId: req.body.userId,
             bookId: req.body.bookId,
             orderDate: req.body.orderDate,
-            returnDate: date,
+            dueDate: date,
             fine: req.body.fine,
             status: req.body.status
         })
@@ -39,12 +39,27 @@ router.get('/order-details/:id', async (req, res) => {
         res.status(500).send({ error: error.message });
     }
 })
+
 router.get('/all-orders', async (req, res) => {
     try {
         const orderedBooks = await Order.find().populate('userId bookId')
         res.status(201).send(orderedBooks);
     } catch (error) {
         res.status(500).send({ error: error.messasge })
+    }
+})
+router.patch('/return-book/:uid/:bid',async(req,res)=>{
+    try {
+        const userId=req.params.uid
+        const bookId=req.params.bid
+console.log(userId)
+console.log(bookId)
+        const orderDetails= await Order.findOne({$and:[{userId:userId},{bookId:bookId}]})
+        if(orderDetails){
+            console.log(orderDetails)
+        }
+    } catch (error) {
+        res.status(500).send({error:error.message})
     }
 })
 module.exports = router;

@@ -14,6 +14,10 @@ const OrderSchema = new Schema({
         type:String,
         default:Date
     },
+    dueDate:{
+        type:String,
+        default:0
+    },
     returnDate:{
         type:String,
         default:0
