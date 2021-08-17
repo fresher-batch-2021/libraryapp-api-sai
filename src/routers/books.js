@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Book = require('../Model/Books');
-const Order= require('../Model/Orders');
+const Order = require('../Model/Orders');
 
 router.post('/add-book', async (req, res) => {
 	const newbook = new Book(req.body);
@@ -68,34 +68,34 @@ router.post('/author-book', async (req, res) => {
 	}
 })
 
-router.delete('/delete-book/:id',async(req,res)=>{
+router.delete('/delete-book/:id', async (req, res) => {
 	try {
-		const deletebooks= await Book.findById(req.params.id,(err,b)=>{
-			if(err){
+		const deletebooks = await Book.findById(req.params.id, (err, b) => {
+			if (err) {
 				console.log(err)
-			}else{
-				Order.findOne({bookId:{$eq:req.params.id}},(err,o)=>{
-					if(err){
+			} else {
+				Order.findOne({ bookId: { $eq: req.params.id } }, (err, o) => {
+					if (err) {
 						console.log(err);
-					}else{
-						const orderDetails=o
-						console.log("order",orderDetails);
-						if(orderDetails == null ){
+					} else {
+						const orderDetails = o
+						console.log("order", orderDetails);
+						if (orderDetails == null) {
 							res.status(500).send("book deleted");
-		                    deletebooks.remove()
+							deletebooks.remove()
 						}
-						else if(orderDetails.status==='ordered'||'borrowed'){
+						else if (orderDetails.status === 'ordered' || 'borrowed') {
 							res.status(201).send("book ordered")
 							return false;
-						}else{
-						res.status(500).send("book not found");
+						} else {
+							res.status(500).send("book not found");
 						}
 					}
 				})
 			}
 		})
 	} catch (error) {
-		res.status(500).send({error:error.message})
+		res.status(500).send({ error: error.message })
 	}
 })
 
