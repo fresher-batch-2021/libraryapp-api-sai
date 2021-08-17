@@ -5,14 +5,14 @@ const Order = require('../Model/Orders');
 const dayjs = require('dayjs')
 router.post('/place-orders', async (req, res) => {
     try {
-        const date = dayjs().add(10, 'days').format('DD/MM/YYYY')
+        const dueDate = dayjs().add(10, 'days').format('YYYY/MM/DD')
         console.log(date)
         const order = await Order({
             userId: req.body.userId,
             bookId: req.body.bookId,
             orderDate: req.body.orderDate,
-            dueDate: date,
-            returnDate:req.body.returnDate,
+            dueDate: dueDate,
+            returnDate:null,
             fine: req.body.fine,
             status: req.body.status
         })
@@ -56,7 +56,14 @@ router.patch('/return-book/:uid/:bid',async(req,res)=>{
 console.log(userId)
 console.log(bookId)
         const orderDetails= await Order.findOne({$and:[{userId:userId},{bookId:bookId}]})
+        console.log(orderDetails)
         if(orderDetails){
+           const returndate= orderDetails.returnDate= new Date().toJSON();
+            const dueDate=orderDetails.dueDate
+          
+           const fine= dayjs().diff(new Date(dueDate)) 
+            console.log(fine)
+            console.log(dueDate)
             console.log(orderDetails)
         }
     } catch (error) {
