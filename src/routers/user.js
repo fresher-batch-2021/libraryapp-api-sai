@@ -2,10 +2,11 @@ const express = require('express');
 const router = express.Router();
 const User = require("../Model/User");
 const bcrypt = require('bcryptjs');
+const UserService = require('../service/userService')
 
 
 router.post('/addUser', async (req, res) => {
-    const email = await User.findOne({ email: req.body.email })
+    const email = await UserService.AddUser({ email: req.body.email })
     console.log(email);
     if (email === null) {
         bcrypt.hash(req.body.password, 10, (err, hashedPass) => {
@@ -21,7 +22,7 @@ router.post('/addUser', async (req, res) => {
             })
             try {
                 console.log(newUser);
-                newUser.save()
+                UserService.save(newUser)
                     .then((e) => res.status(201).send({ data: e, message: "Registered successful" }))
                     .catch((e) => console.log(e));
             } catch (err) {
@@ -32,7 +33,7 @@ router.post('/addUser', async (req, res) => {
         })
     }
 
-    else if (email.email_id === req.body.email_id) {
+    else if (email.email === req.body.email) {
         res.send({ message: "email already exits" })
     }
 })
@@ -40,7 +41,7 @@ router.post('/addUser', async (req, res) => {
 router.post('/login', (req, res) => {
     var password = req.body.password
 
-    User.findOne({ email: req.body.email })
+    UserService.AddUser({ email: req.body.email })
         .then(user => {
             if (user) {
                 bcrypt.compare(password, user.password, function (err, result) {
@@ -73,7 +74,7 @@ router.post('/login', (req, res) => {
 
 router.get('/get-all-users', async (req, res) => {
     try {
-        const allUsers = await User.find();
+        const allUsers = await UserService.allUsers();
         res.status(201).send(allUsers);
     } catch (error) {
         res.status.send({ error: error.message });

@@ -2,18 +2,19 @@ const express = require("express");
 const router = express.Router();
 const Book = require('../Model/Books');
 const Order = require('../Model/Orders');
-
+const BookService = require("../service/bookService");
+const OrderService=require('../service/orderService')
 router.post('/add-book', async (req, res) => {
-	const newbook = new Book(req.body);
+	const newbook = req.body;
 	const bookName = req.body.bookName
 	console.log(bookName, newbook)
 	try {
-		Book.findOne({ bookName }, function (err, result) {
+		BookService.addBook(bookName, function (err, result) {
 			if (err) {
 				throw (err);
 			} else if (!result) {
 				try {
-					newbook.save()
+					BookService.save(newbook)
 						.then((e) => res.status(201).send("Book Added Successfully"))
 						.catch((e) => console.log(e))
 				} catch (err) {
@@ -32,10 +33,8 @@ router.post('/add-book', async (req, res) => {
 
 router.post('/get-all-books', async (req, res) => {
 	try {
-		let allBooks = await Book.find();
+		let allBooks = await BookService.getAllBooks();
 		let active = req.query.status;
-
-
 		if (active) {
 			allBooks = allBooks.filter(obj => obj.status === active);
 		}
@@ -47,9 +46,9 @@ router.post('/get-all-books', async (req, res) => {
 	}
 })
 
-router.post('/book-details', async (req, res) => {
+router.get('/book-details', async (req, res) => {
 	try {
-		const bookDetails = await Book.find({ bookName: req.body.bookName })
+		const bookDetails = await BookService.getBookDetails(req.body.bookName)
 		console.log(bookDetails);
 		res.status(201).send(bookDetails);
 	} catch (error) {
@@ -60,7 +59,7 @@ router.post('/book-details', async (req, res) => {
 
 router.post('/author-book', async (req, res) => {
 	try {
-		const authorBooks = await Book.find({ authorName: req.body.authorName })
+		const authorBooks = await BookService.getAuthorBook(req.body.authorName)
 		console.log(authorBooks);
 		res.status(201).send(authorBooks);
 	} catch (error) {
@@ -70,11 +69,11 @@ router.post('/author-book', async (req, res) => {
 
 router.delete('/delete-book/:id', async (req, res) => {
 	try {
-		const deletebooks = await Book.findById(req.params.id, (err, b) => {
+		const deleteBooks = await BookService.deleteBook(req.params.id, (err, b) => {
 			if (err) {
 				console.log(err)
 			} else {
-				Order.findOne({ bookId: { $eq: req.params.id } }, (err, o) => {
+				OrderService.getOrder({ bookId:{$eq:req.params.id} }, (err, o) => {
 					if (err) {
 						console.log(err);
 					} else {
@@ -82,7 +81,8 @@ router.delete('/delete-book/:id', async (req, res) => {
 						console.log("order", orderDetails);
 						if (orderDetails == null) {
 							res.status(500).send("book deleted");
-							deletebooks.remove()
+							console.log("book",deleteBooks)
+							BookService.remove(deleteBooks)
 						}
 						else if (orderDetails.status === 'ordered' || 'borrowed') {
 							res.status(201).send("book ordered")
@@ -113,7 +113,7 @@ router.put('/update-book/:id', async (req, res) => {
 	}
 
 	try {
-		const updateBook = await Book.findById(req.params.id)
+		const updateBook = await BookService.getBookById(req.params.id)
 		console.log(updateBook);
 		if (!updateBook) {
 
@@ -122,7 +122,7 @@ router.put('/update-book/:id', async (req, res) => {
 		updates.forEach((update) => {
 			updateBook[update] = req.body[update];
 		});
-		await updateBook.save();
+		 BookService.save(updateBook);
 		res.send(updateBook);
 	} catch (err) {
 		res.status(500).send({ error: err.message });
@@ -147,7 +147,7 @@ router.put('/update-book-status/:id', async (req, res) => {
 	}
 
 	try {
-		const book = await Book.findById(req.params.id)
+		const book = await BookService.getBookById(req.params.id)
 		console.log(book);
 		if (!book) {
 
@@ -156,7 +156,7 @@ router.put('/update-book-status/:id', async (req, res) => {
 		updates.forEach((update) => {
 			book[update] = req.body[update];
 		});
-		await book.save();
+		BookService.save(book);
 		res.send(book);
 	} catch (err) {
 		res.status(500).send({ error: err.message });
@@ -167,7 +167,7 @@ router.put('/update-book-status/:id', async (req, res) => {
 router.get("/get-book-by-id/:id", async (req, res) => {
 	try {
 		const bookId = req.params.id;
-		const bookDetails = await Book.findById(bookId);
+		const bookDetails = await BookService.getBookById(bookId);
 		console.log(bookDetails)
 		res.status(201).send(bookDetails)
 	} catch (error) {
