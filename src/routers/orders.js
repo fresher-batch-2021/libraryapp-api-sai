@@ -4,10 +4,12 @@ const Book = require('../Model/Books')
 const Order = require('../Model/Orders');
 const BookService = require("../service/bookService");
 const OrderService = require('../service/orderService')
+const LibraryService = require('../service/library-service')
 const dayjs = require('dayjs')
 router.post('/place-orders', async (req, res) => {
     try {
-        const dueDate = dayjs().add(10, 'days').format('YYYY-MM-DD')
+        // const dueDate = dayjs().add(10, 'days').format('YYYY-MM-DD')
+        const dueDate = LibraryService.getDueDate();
         const order = await Order({
             userId: req.body.userId,
             bookId: req.body.bookId,
@@ -56,29 +58,23 @@ router.patch('/return-book/:uid/:bid', async (req, res) => {
         const bookId = req.params.bid
         console.log(userId)
         console.log(bookId)
-        const orderDetails = await Order.findOne({ $and: [{ userId: userId }, { bookId: bookId }] })
+        const orderDetails = await OrderService.getOrders(bookId, userId);
         console.log(orderDetails)
         if (orderDetails) {
             orderDetails.returnDate = new Date().toJSON();
-            const dueDate = orderDetails.dueDate;
+            orderDetails.fine = LibraryService.getFineAmount(orderDetails.dueDate)
+            const book = await BookService.getBookById({ _id: bookId })
+            if (!book) {
+                res.status(400).send("book not found");
 
-            const noOfDaysDelayed = dayjs().diff(dueDate, 'days');
-            const perDayFine = 10;
-            let fine = 0
-            if (noOfDaysDelayed > 0) {
-                fine = orderDetails.fine = perDayFine * noOfDaysDelayed;
             } else {
-                const book = await BookService.getBookById({ _id: bookId })
-                if (!book) {
-                    res.status(400).send("book not found");
-
-                } else {
-                    book.quantity += 1
-                    BookService.save(book)
-                }
+               book.quantity=LibraryService.addBookQuantity(book.quantity)
+                console.log(book)
+               BookService.save(book)
             }
+            
             OrderService.save(orderDetails);
-            res.status(201).send("pay fine Rs:" + fine);
+            res.status(201).send("pay fine Rs:" + orderDetails.fine);
         }
         else {
             res.send("order not found")
@@ -97,9 +93,11 @@ router.patch('/renew-date/:uid/:bid', async (req, res) => {
             console.log('not found')
         } else {
             const duedate = renewdate.dueDate
-            const dif = dayjs().diff(duedate, 'days')
+            const dif = LibraryService.getDiff(duedate)
+            console.log(dif)
             if (dif < 0) {
-                renewdate.dueDate = dayjs(renewdate.dueDate).add(3, 'days').format('YYYY-MM-DD')
+                renewdate.dueDate = LibraryService.getRenewalDueDate(renewdate.dueDate);
+                console.log(duedate)
                 console.log('you can renew')
             } else {
                 console.log('you cant renew')

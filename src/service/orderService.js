@@ -13,6 +13,13 @@ class OrderService{
     static allOrders(){
         return Order.find()
     }
+    static async getOrders(bookId,userId){
+        return Order.findOne({ $and: [{ userId: userId }, { bookId: bookId }] })
+
+    }
+    static returnBook(){
+        
+    }
 }
 
 module.exports=OrderService;
