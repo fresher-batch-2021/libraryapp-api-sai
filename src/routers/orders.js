@@ -88,4 +88,29 @@ router.patch('/return-book/:uid/:bid', async (req, res) => {
     }
 })
 
+router.patch('/renew-date/:uid/:bid', async (req, res) => {
+    try {
+        const userId = req.params.uid
+        const bookId = req.params.bid
+        const renewdate = await Order.findOne({ $and: [{ userId: userId }, { bookId: bookId }] })
+        if (!renewdate) {
+            console.log('not found')
+        } else {
+            const duedate = renewdate.dueDate
+            const dif = dayjs().diff(duedate, 'days')
+            if (dif < 0) {
+                renewdate.dueDate = dayjs(renewdate.dueDate).add(3, 'days').format('YYYY-MM-DD')
+                console.log('you can renew')
+            } else {
+                console.log('you cant renew')
+            }
+        }
+        renewdate.save()
+        res.status(201).send(renewdate)
+    } catch (error) {
+        res.status(500).send({ error: error.message })
+
+    }
+})
+
 module.exports = router;
