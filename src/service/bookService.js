@@ -97,15 +97,10 @@ class BookService {
         const updates = Object.keys(book);
         console.log("h",updates);
         const allowedUpdates = ['status'];
-        const isValidOperation = updates.every((update) => {
-            let exist = allowedUpdates.includes(update);
-            if (!exist) {
-                console.log("s",update);
-            }
-            return exist;
+        const isValidOperation = allowedUpdates.every((update) => {
+            return allowedUpdates.includes(update);
+            
         });
-
-
 
         if (!isValidOperation) {
             throw new Error('Invalid Operation');
