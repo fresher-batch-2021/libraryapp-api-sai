@@ -105,7 +105,7 @@ router.put('/update-book/:id', async (req, res) => {
 		const updateBook = req.body;
 		updateBook._id = req.params.id;
 		BookService.updateBook(updateBook);
-		res.send(updateBook);
+		res.status(200).send(updateBook);
 	} catch (err) {
 		res.status(500).send({ error: err.message });
 	}
@@ -116,8 +116,9 @@ router.put('/update-book-status/:id', async (req, res) => {
 
 	try {
 		let book = req.body;
+		console.log(book)
 		book._id = req.params.id;
-		//	await BookService.update(book);
+	     BookService.updateBookStatus(book);
 		res.status(200).send(book);
 	}
 	catch (err) {

@@ -7,6 +7,7 @@ class BookDAO{
 
     static save(bookObj){
         const book = new Book(bookObj);
+        console.log(book)
         return book.save();
     }
     static findAll(){

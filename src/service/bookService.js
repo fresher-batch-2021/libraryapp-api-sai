@@ -61,26 +61,20 @@ class BookService {
 
     }
 
-    static validateBeforeUpdate(book){
-
-          //1. Validation
-          const updates = Object.keys(book);
-          console.log(updates);
-  
-          const allowedUpdates = ['bookName', 'authorName', 'category', 'price', 'quantity', 'description', 'image'];
-          const isValidOperation = allowedUpdates.every((fieldName) => {
-              return updates.includes(fieldName);
-          });
-  
-          if (!isValidOperation) {
-              throw new Error('Invalid Operation');
-          }
-  
-    }
 
     static async updateBook(book) {
       
-        validateBeforeUpdate(book);
+        const updates = Object.keys(book);
+        console.log(updates);
+
+        const allowedUpdates = ['bookName', 'authorName', 'category', 'price', 'quantity', 'description', 'image'];
+        const isValidOperation = allowedUpdates.every((fieldName) => {
+            return updates.includes(fieldName);
+        });
+
+        if (!isValidOperation) {
+            throw new Error('Invalid Operation');
+        }
 
         //2. Check is valid book
         const bookObj = await BookDAO.findById(book._id)
@@ -98,20 +92,15 @@ class BookService {
 
 
     }
-
-
-
-
-
     static async updateBookStatus(book) {
         //1. Validation
         const updates = Object.keys(book);
-        console.log(updates);
+        console.log("h",updates);
         const allowedUpdates = ['status'];
         const isValidOperation = updates.every((update) => {
             let exist = allowedUpdates.includes(update);
             if (!exist) {
-                console.log(update);
+                console.log("s",update);
             }
             return exist;
         });
@@ -125,7 +114,7 @@ class BookService {
 
         //2. Check is valid book
         const bookObj = await BookDAO.findById(book._id)
-        console.log(bookObj);
+        console.log("y",bookObj);
         if (!bookObj) {
 
             throw new Error('book not found');
