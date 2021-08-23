@@ -22,7 +22,7 @@ router.post('/add-book', async (req, res) => {
 
 router.post('/get-all-books', async (req, res) => {
 	try {
-		let allBooks = await BookService.getAllBooks();
+		let allBooks = await BookService.getAllBooks().sort({ createdAt: "desc" });
 		let active = req.query.status;
 		if (active) {
 			allBooks = allBooks.filter(obj => obj.status === active);
@@ -83,7 +83,7 @@ router.delete('/delete-book/:id', async (req, res) => {
 							console.log("book", deleteBooks)
 							BookService.remove(deleteBooks)
 						}
-						else if (orderDetails.status === 'ordered' || 'borrowed') {
+						else if (orderDetails.status === 'ordered' || 'renewed') {
 							res.status(201).send("book ordered")
 							return false;
 						} else {

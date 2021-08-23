@@ -28,8 +28,17 @@ router.post('/place-orders', async (req, res) => {
             BookService.save(book)
             res.status(200).send(book)
         }
-        console.log(order)
-        OrderService.save(order)
+        const user=await Order.find({userId:req.body.userId});
+         const count =user.length
+         if(count>3){
+             console.log("Already ordered 3 books")
+             return false
+         }else{
+            console.log(count);
+            console.log(order)
+            OrderService.save(order) 
+        }
+      
     } catch (error) {
         res.status(500).send({ error: error.message })
     }
@@ -72,7 +81,7 @@ router.patch('/return-book/:uid/:bid', async (req, res) => {
                 console.log(book)
                BookService.save(book)
             }
-            
+            console.log('order',orderDetails)
             OrderService.save(orderDetails);
             res.status(201).send("pay fine Rs:" + orderDetails.fine);
         }
@@ -97,6 +106,8 @@ router.patch('/renew-date/:uid/:bid', async (req, res) => {
             console.log(dif)
             if (dif < 0) {
                 renewdate.dueDate = LibraryService.getRenewalDueDate(renewdate.dueDate);
+                renewdate.status="renewed"
+                console.log(renewdate)
                 console.log(duedate)
                 console.log('you can renew')
             } else {
@@ -110,5 +121,4 @@ router.patch('/renew-date/:uid/:bid', async (req, res) => {
 
     }
 })
-
 module.exports = router;

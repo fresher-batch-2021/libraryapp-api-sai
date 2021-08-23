@@ -90,7 +90,7 @@ class BookService {
             throw new Error('book not found');
         }
 
-        //3. modify fields and then update
+        //3. modify fields and then update`
         updates.forEach((update) => {
             bookObj[update] = book[update];
         });
