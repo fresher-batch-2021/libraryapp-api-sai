@@ -17,9 +17,7 @@ class OrderService{
         return Order.findOne({ $and: [{ userId: userId }, { bookId: bookId }] })
 
     }
-    static returnBook(){
-        
-    }
+  
 }
 
 module.exports=OrderService;

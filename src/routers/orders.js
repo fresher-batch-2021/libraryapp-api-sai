@@ -19,24 +19,22 @@ router.post('/place-orders', async (req, res) => {
             fine: req.body.fine,
             status: req.body.status
         })
-        const book = await BookService.getBookById({ _id: req.body.bookId })
-        if (!book) {
-            res.status(400).send("book not found");
-
-        } else {
-            book.quantity -= 1
-            BookService.save(book)
-            res.status(200).send(book)
-        }
         const user=await Order.find({userId:req.body.userId});
          const count =user.length
-         if(count>3){
-             console.log("Already ordered 3 books")
-             return false
+         console.log(count)
+         if(count>=3){
+             throw new Error("Already ordered 3 books")
          }else{
-            console.log(count);
-            console.log(order)
-            OrderService.save(order) 
+            const book = await BookService.getBookById({ _id: req.body.bookId })
+            if (!book) {
+                res.status(400).send("book not found");
+    
+            } else {
+                book.quantity -= 1
+                BookService.save(book)
+                res.status(200).send(book)
+                OrderService.save(order)
+            }
         }
       
     } catch (error) {
@@ -65,10 +63,7 @@ router.patch('/return-book/:uid/:bid', async (req, res) => {
     try {
         const userId = req.params.uid
         const bookId = req.params.bid
-        console.log(userId)
-        console.log(bookId)
         const orderDetails = await OrderService.getOrders(bookId, userId);
-        console.log(orderDetails)
         if (orderDetails) {
             orderDetails.returnDate = new Date().toJSON();
             orderDetails.fine = LibraryService.getFineAmount(orderDetails.dueDate)
@@ -78,10 +73,8 @@ router.patch('/return-book/:uid/:bid', async (req, res) => {
 
             } else {
                book.quantity=LibraryService.addBookQuantity(book.quantity)
-                console.log(book)
                BookService.save(book)
             }
-            console.log('order',orderDetails)
             OrderService.save(orderDetails);
             res.status(201).send("pay fine Rs:" + orderDetails.fine);
         }
@@ -99,7 +92,7 @@ router.patch('/renew-date/:uid/:bid', async (req, res) => {
         const bookId = req.params.bid
         const renewdate = await Order.findOne({ $and: [{ userId: userId }, { bookId: bookId }] })
         if (!renewdate) {
-            console.log('not found')
+            throw new Error('order not found')
         } else {
             const duedate = renewdate.dueDate
             const dif = LibraryService.getDiff(duedate)
@@ -107,15 +100,12 @@ router.patch('/renew-date/:uid/:bid', async (req, res) => {
             if (dif < 0) {
                 renewdate.dueDate = LibraryService.getRenewalDueDate(renewdate.dueDate);
                 renewdate.status="renewed"
-                console.log(renewdate)
-                console.log(duedate)
-                console.log('you can renew')
             } else {
                 console.log('you cant renew')
             }
         }
         renewdate.save()
-        res.status(201).send(renewdate)
+        res.status(201).send('Book Renewed')
     } catch (error) {
         res.status(500).send({ error: error.message })
 
