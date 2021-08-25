@@ -114,7 +114,7 @@ router.post('/place-orders', async (req, res) => {
                             OrderService.save(order)
                         }
                     } else {
-                        res.status(201).send("already ordered")
+                        res.status(201).send({message:"already ordered"})
                     }
                 }
             })
