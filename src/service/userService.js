@@ -1,7 +1,7 @@
 const User= require('../Model/User');
 
 class UserService{
-    static AddUser(userObj){
+    static findUser(userObj){
         return User.findOne(userObj)
     }
     

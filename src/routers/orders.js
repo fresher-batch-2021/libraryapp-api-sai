@@ -19,16 +19,16 @@ router.post('/place-orders', async (req, res) => {
             fine: req.body.fine,
             status: req.body.status
         })
-        const user=await Order.find({userId:req.body.userId});
-         const count =user.length
-         console.log(count)
-         if(count>=3){
-             throw new Error("Already ordered 3 books")
-         }else{
+        const user = await Order.find({ userId: req.body.userId });
+        const count = user.length
+        console.log(count)
+        if (count >= 3) {
+            throw new Error('Already ordered 3 books')
+        } else {
             const book = await BookService.getBookById({ _id: req.body.bookId })
             if (!book) {
                 res.status(400).send("book not found");
-    
+
             } else {
                 book.quantity -= 1
                 BookService.save(book)
@@ -36,7 +36,7 @@ router.post('/place-orders', async (req, res) => {
                 OrderService.save(order)
             }
         }
-      
+
     } catch (error) {
         res.status(500).send({ error: error.message })
     }
@@ -72,9 +72,10 @@ router.patch('/return-book/:uid/:bid', async (req, res) => {
                 res.status(400).send("book not found");
 
             } else {
-               book.quantity=LibraryService.addBookQuantity(book.quantity)
-               BookService.save(book)
+                book.quantity = LibraryService.addBookQuantity(book.quantity)
+                BookService.save(book)
             }
+            console.log(orderDetails)
             OrderService.save(orderDetails);
             res.status(201).send("pay fine Rs:" + orderDetails.fine);
         }
@@ -99,7 +100,7 @@ router.patch('/renew-date/:uid/:bid', async (req, res) => {
             console.log(dif)
             if (dif < 0) {
                 renewdate.dueDate = LibraryService.getRenewalDueDate(renewdate.dueDate);
-                renewdate.status="renewed"
+                renewdate.status = "renewed"
             } else {
                 console.log('you cant renew')
             }
@@ -109,6 +110,23 @@ router.patch('/renew-date/:uid/:bid', async (req, res) => {
     } catch (error) {
         res.status(500).send({ error: error.message })
 
+    }
+})
+router.post('/ordered',async (req,res)=>{
+    try {
+        const userId=req.body.userId
+        const bookId=req.body.bookId
+        const orders= Order.find({ $and: [{ userId: userId }, { bookId: bookId }] })
+          if(orders){
+              console.log(orders)
+              console.log('err')
+          }else{
+              console.log('no')
+          }
+        }
+         catch (error) {
+        res.status(500).send(err.message)
+        
     }
 })
 module.exports = router;

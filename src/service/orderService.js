@@ -5,7 +5,7 @@ class OrderService{
     }
     static save(orderObj){
         const order = new Order(orderObj);
-        return order.save();
+        return order.save(orderObj);
     }
     static userOrders(userId){
         return Order.find(userId)

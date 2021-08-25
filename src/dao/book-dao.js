@@ -28,7 +28,7 @@ class BookDAO{
     }
 
     static deleteBook(bookId,callback){
-       return Book.findById(bookId,callback)
+       return Book.findOne(bookId,callback)
 
     }
 }

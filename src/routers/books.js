@@ -66,35 +66,34 @@ router.post('/author-book', async (req, res) => {
 	}
 })
 
-router.delete('/delete-book/:id', async (req, res) => {
+router.delete('/delete/:id', async (req, res) => {
 	try {
-		const deleteBooks = await BookService.deleteBook(req.params.id, (err, b) => {
+		await Book.findOne({ _id: req.params.id }, (err, o) => {
 			if (err) {
-				console.log(err)
+				throw new Error(err)
 			} else {
-				OrderService.getOrder({ bookId: { $eq: req.params.id } }, (err, o) => {
+				Order.findOne({ bookId: req.params.id }, (err, s) => {
 					if (err) {
-						console.log(err);
+						throw new Error(err)
 					} else {
-						const orderDetails = o
-						console.log("order", orderDetails);
+						const orderDetails = s
 						if (orderDetails == null) {
-							res.status(500).send("book deleted");
-							console.log("book", deleteBooks)
-							BookService.remove(deleteBooks)
+							console.log(o)
+							o.remove()
+							res.status(200).send('book deleted')
 						}
-						else if (orderDetails.status === 'ordered' || 'renewed') {
-							res.status(201).send("book ordered")
-							return false;
+						else if (orderDetails.status == 'ordered' || 'renewed') {
+							res.status(200).send('book has been ordered')
+							return false
 						} else {
-							res.status(500).send("book not found");
+							res.status(500).send('book not found')
 						}
 					}
 				})
 			}
 		})
 	} catch (error) {
-		res.status(500).send({ error: error.message })
+
 	}
 })
 
@@ -118,7 +117,7 @@ router.put('/update-book-status/:id', async (req, res) => {
 		let book = req.body;
 		console.log(book)
 		book._id = req.params.id;
-	     BookService.updateBookStatus(book);
+		BookService.updateBookStatus(book);
 		res.status(200).send(book);
 	}
 	catch (err) {

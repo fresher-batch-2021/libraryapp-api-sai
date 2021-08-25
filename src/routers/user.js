@@ -6,7 +6,7 @@ const UserService = require('../service/userService')
 
 
 router.post('/addUser', async (req, res) => {
-    const email = await UserService.AddUser({ email: req.body.email })
+    const email = await UserService.findUser({ email: req.body.email })
     console.log(email);
     if (email === null) {
         bcrypt.hash(req.body.password, 10, (err, hashedPass) => {
@@ -23,8 +23,7 @@ router.post('/addUser', async (req, res) => {
             try {
                 console.log(newUser);
                 UserService.save(newUser)
-                    .then((e) => res.status(201).send({ data: e, message: "Registered successful" }))
-                    .catch((e) => console.log(e));
+               res.status(201).send({ data: e, message: "Registered successful" })
             } catch (err) {
                 console.error(err);
                 res.status(500).send({ error: err.message });
@@ -39,9 +38,9 @@ router.post('/addUser', async (req, res) => {
 })
 
 router.post('/login', (req, res) => {
-    var password = req.body.password
+     let password = req.body.password
 
-    UserService.AddUser({ email: req.body.email })
+    UserService.findUser({ email: req.body.email })
         .then(user => {
             if (user) {
                 bcrypt.compare(password, user.password, function (err, result) {
