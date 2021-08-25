@@ -77,29 +77,6 @@ router.patch('/renew-date/:uid/:bid', async (req, res) => {
 
     }
 })
-router.post('/ordered', async (req, res) => {
-    try {
-        const userId = req.body.userId
-        const bookId = req.body.bookId
-        const orders = Order.findOne({ $and: [{ userId: userId }, { bookId: bookId }] }, (err, result) => {
-            if (err) {
-                console.log('err')
-            } else {
-                if (result == null) {
-                    console.log('not odered')
-                } else {
-                    console.log(result)
-                    console.log('no')
-                }
-            }
-        })
-
-    }
-    catch (error) {
-        res.status(500).send(err.message)
-
-    }
-})
 router.post('/place-orders', async (req, res) => {
     try {
         const userId = req.body.userId
@@ -133,12 +110,11 @@ router.post('/place-orders', async (req, res) => {
                         } else {
                             book.quantity -= 1
                             BookService.save(book)
-                            res.json({message:"book ordered"})
+                            res.json({message:"book ordered successfully"})
                             OrderService.save(order)
                         }
                     } else {
-                        console.log("already ordered")
-                        res.status(500).send("already ordered")
+                        res.status(201).send("already ordered")
                     }
                 }
             })
