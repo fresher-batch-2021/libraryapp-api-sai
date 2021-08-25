@@ -67,7 +67,7 @@ class BookService {
         const updates = Object.keys(book);
         console.log(updates);
 
-        const allowedUpdates = ['bookName', 'authorName', 'category', 'price', 'quantity', 'description', 'image'];
+        const allowedUpdates = ['bookName', 'authorName', 'category', 'price', 'description', 'image'];
         const isValidOperation = allowedUpdates.every((fieldName) => {
             return updates.includes(fieldName);
         });

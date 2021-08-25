@@ -23,7 +23,8 @@ router.post('/addUser', async (req, res) => {
             try {
                 console.log(newUser);
                 UserService.save(newUser)
-               res.status(201).send({ data: e, message: "Registered successful" })
+                 res.status(201).send({ data: e, message: "Registered successful" })
+                    console.log(e);
             } catch (err) {
                 console.error(err);
                 res.status(500).send({ error: err.message });
@@ -38,7 +39,7 @@ router.post('/addUser', async (req, res) => {
 })
 
 router.post('/login', (req, res) => {
-     let password = req.body.password
+    let password = req.body.password
 
     UserService.findUser({ email: req.body.email })
         .then(user => {
