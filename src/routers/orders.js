@@ -112,21 +112,76 @@ router.patch('/renew-date/:uid/:bid', async (req, res) => {
 
     }
 })
-router.post('/ordered',async (req,res)=>{
+router.post('/ordered', async (req, res) => {
     try {
-        const userId=req.body.userId
-        const bookId=req.body.bookId
-        const orders= Order.find({ $and: [{ userId: userId }, { bookId: bookId }] })
-          if(orders){
-              console.log(orders)
-              console.log('err')
-          }else{
-              console.log('no')
-          }
-        }
-         catch (error) {
+        const userId = req.body.userId
+        const bookId = req.body.bookId
+        const orders = Order.findOne({ $and: [{ userId: userId }, { bookId: bookId }] }, (err, result) => {
+            if (err) {
+                console.log('err')
+            } else {
+                if (result == null) {
+                    console.log('not odered')
+                } else {
+                    console.log(result)
+                    console.log('no')
+                }
+            }
+        })
+
+    }
+    catch (error) {
         res.status(500).send(err.message)
-        
+
     }
 })
+router.post('/place-orde', async (req, res) => {
+    try {
+        const userId = req.body.userId
+        const bookId = req.body.bookId
+        const dueDate = LibraryService.getDueDate();
+        const order = await Order({
+            userId: userId,
+            bookId: bookId,
+            orderDate: req.body.orderDate,
+            dueDate: dueDate,
+            returnDate: null,
+            fine: req.body.fine,
+            status: req.body.status
+        })
+        const user = await Order.find({ userId: req.body.userId });
+        const count = user.length
+        console.log(count)
+        if (count >= 3) {
+            throw new Error('Already ordered 3 books')
+        } else {
+            Order.findOne({ $and: [{ userId: userId }, { bookId: bookId }] }, async (err, result) => {
+                if (err) {
+                    console.log('err')
+                    throw new Error(err)
+                } else {
+                    console.log("hii", result)
+                    if (result == null) {
+                        const book = await BookService.getBookById({ _id: bookId })
+                        if (!book) {
+                            res.json({message:"book not found"})
+                        } else {
+                            book.quantity -= 1
+                            BookService.save(book)
+                            res.json({message:"book ordered"})
+                            OrderService.save(order)
+                        }
+                    } else {
+                        console.log("already ordered")
+                        res.status(500).send("already ordered")
+                    }
+                }
+            })
+
+        }
+
+    } catch (error) {
+        res.status(500).send({ error: error.message })
+    }
+});
 module.exports = router;
