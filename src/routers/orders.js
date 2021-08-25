@@ -6,41 +6,6 @@ const BookService = require("../service/bookService");
 const OrderService = require('../service/orderService')
 const LibraryService = require('../service/library-service')
 const dayjs = require('dayjs')
-router.post('/place-orders', async (req, res) => {
-    try {
-        // const dueDate = dayjs().add(10, 'days').format('YYYY-MM-DD')
-        const dueDate = LibraryService.getDueDate();
-        const order = await Order({
-            userId: req.body.userId,
-            bookId: req.body.bookId,
-            orderDate: req.body.orderDate,
-            dueDate: dueDate,
-            returnDate: null,
-            fine: req.body.fine,
-            status: req.body.status
-        })
-        const user = await Order.find({ userId: req.body.userId });
-        const count = user.length
-        console.log(count)
-        if (count >= 3) {
-            throw new Error('Already ordered 3 books')
-        } else {
-            const book = await BookService.getBookById({ _id: req.body.bookId })
-            if (!book) {
-                res.status(400).send("book not found");
-
-            } else {
-                book.quantity -= 1
-                BookService.save(book)
-                res.status(200).send(book)
-                OrderService.save(order)
-            }
-        }
-
-    } catch (error) {
-        res.status(500).send({ error: error.message })
-    }
-});
 router.get('/order-details/:id', async (req, res) => {
     try {
         const orderdetails = await OrderService.userOrders({ userId: req.params.id }).populate('bookId').sort({ createdAt: "desc" });
@@ -135,7 +100,7 @@ router.post('/ordered', async (req, res) => {
 
     }
 })
-router.post('/place-orde', async (req, res) => {
+router.post('/place-orders', async (req, res) => {
     try {
         const userId = req.body.userId
         const bookId = req.body.bookId
