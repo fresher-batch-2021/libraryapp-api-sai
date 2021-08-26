@@ -3,6 +3,9 @@ class OrderService{
     static getOrder(bookId,callback){
            Order.findOne(bookId,callback);
     }
+    static findOrderDetails(userId,bookId,callback){
+        return Order.findOne({ $and: [{ userId: userId }, { bookId: bookId }] },callback)
+    }
     static save(orderObj){
         const order = new Order(orderObj);
         return order.save(orderObj);
@@ -17,7 +20,6 @@ class OrderService{
         return Order.findOne({ $and: [{ userId: userId }, { bookId: bookId }] })
 
     }
-  
 }
 
 module.exports=OrderService;

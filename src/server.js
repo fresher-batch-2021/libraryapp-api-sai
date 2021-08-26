@@ -4,7 +4,7 @@ const cors = require('cors');
 const users = require('./routers/user');
 const book = require('./routers/books');
 const order = require('./routers/orders');
-
+const request=require('./routers/request')
 require('dotenv').config();
 let port = process.env.PORT;
 let db = process.env.DB
@@ -27,5 +27,6 @@ mongoose
 app.use('/users', users);
 app.use('/book', book);
 app.use('/order', order)
+app.use('/request',request)
 app.listen(port, () =>
     console.log(`Server running on port ${port}`));

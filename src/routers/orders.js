@@ -91,13 +91,13 @@ router.post('/place-orders', async (req, res) => {
             fine: req.body.fine,
             status: req.body.status
         })
-        const user = await Order.find({ userId: req.body.userId });
+        const user = await OrderService.userOrders({userId:userId});
         const count = user.length
         console.log(count)
         if (count >= 3) {
             throw new Error('Already ordered 3 books')
         } else {
-            Order.findOne({ $and: [{ userId: userId }, { bookId: bookId }] }, async (err, result) => {
+                OrderService.findOrderDetails(userId,bookId, async (err, result) => {
                 if (err) {
                     console.log('err')
                     throw new Error(err)
