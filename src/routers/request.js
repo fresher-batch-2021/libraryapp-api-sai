@@ -1,19 +1,24 @@
 const express = require("express");
 const router = express.Router();
 const Request_book = require('../Model/Request_book')
-const Book=require('../Model/Books')
+const Book = require('../Model/Books')
 const dayjs = require('dayjs')
 router.post('/add-request', async (req, res) => {
     try {
-    const newRequest = await Request_book.findOne({ bookName: req.body.bookName });
-    const books=await Book.findOne({bookName: req.body.bookName})
-    console.log(books)
-        if (newRequest === null&&books===null) {
-            const addBook = new Request_book( { bookName: req.body.bookName,userId: req.body.userId,requestedDate:req.body.requestedDate })
+        const newRequest = await Request_book.findOne({ bookName: req.body.bookName });
+        const books = await Book.findOne({ bookName: req.body.bookName })
+        console.log(newRequest)
+        if (newRequest !== null) {
+            res.send("Book Already Requested")
+            console.log(books)
+
+        } else if (books !== null) {
+            res.send('Book Already Exists')
+            return false
+        } else {
+            const addBook = new Request_book(req.body)
             await addBook.save()
             res.send("Book Added Successfully")
-            }else{
-            res.status(201).send("Book Already Requested or Book Already Exists");
         }
     } catch (err) {
         res.status(500).send({ err: err.message });
@@ -22,7 +27,7 @@ router.post('/add-request', async (req, res) => {
 
 router.get('/all-requests', async (req, res) => {
     try {
-        const allRequests = await Request_book.find().populate('userId', 'name')
+        const allRequests = await Request_book.find().populate('count','name')
         res.status(200).send(allRequests);
     } catch (error) {
         res.status(500).send({ err: error.message })
@@ -34,6 +39,37 @@ router.get('/user-requests', async (req, res) => {
         res.status(200).send(userRequests)
     } catch (error) {
         res.status(500).send({ err: error.message })
+    }
+})
+router.patch('/add-count/:id', async (req, res) => {
+    try {
+        const addcount = await Request_book.findOne({ _id: req.params.id })
+        addcount.count += 1
+        addcount.save()
+        console.log(addcount)
+        res.status(201).send('Added Your Request')
+    } catch (error) {
+        res.status(500).send({ err: error.message })
+    }
+})
+router.post('/add-count', async (req, res) => {
+    const request = await Request_book.findOne({ _id: req.body._id });
+    console.log(request)
+    const user = req.body.user_id
+    console.log(user)
+    const newRequest = request.count.includes(user)
+    console.log(newRequest);
+    if (newRequest === true) {
+        request.count.remove(user)
+    }
+    else {
+        request.count.push(user)
+    }
+    try {
+        await request.save();
+        res.status(201).send("Added Your Request");
+    } catch (err) {
+        res.status(500).send({err:err.message})
     }
 })
 

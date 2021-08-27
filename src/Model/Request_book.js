@@ -6,17 +6,13 @@ const RequestSchema = new Schema({
         type: String,
         required: true
     },
-    userId: {
-        type: Schema.Types.ObjectId,
-        ref: "user"
-    },
-    count:{
-        type:Number,
-        default:1
-    },
     requestedDate:{
         type:String,
         default:Date
-    }
+    },
+    count:[{
+        type:Schema.Types.ObjectId,
+        ref:"user"
+    }]
 })
 module.exports = Request_book = mongoose.model('request', RequestSchema);
