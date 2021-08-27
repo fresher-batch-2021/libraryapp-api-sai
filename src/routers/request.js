@@ -2,14 +2,14 @@ const express = require("express");
 const router = express.Router();
 const Request_book = require('../Model/Request_book')
 const Book=require('../Model/Books')
-
+const dayjs = require('dayjs')
 router.post('/add-request', async (req, res) => {
     try {
     const newRequest = await Request_book.findOne({ bookName: req.body.bookName });
     const books=await Book.findOne({bookName: req.body.bookName})
     console.log(books)
         if (newRequest === null&&books===null) {
-            const addBook = new Request_book( { bookName: req.body.bookName,userId: req.body.userId })
+            const addBook = new Request_book( { bookName: req.body.bookName,userId: req.body.userId,requestedDate:req.body.requestedDate })
             await addBook.save()
             res.send("Book Added Successfully")
             }else{

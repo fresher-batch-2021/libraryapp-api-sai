@@ -76,7 +76,7 @@ router.get('/get-all-users', async (req, res) => {
         const allUsers = await UserService.allUsers();
         res.status(201).send(allUsers);
     } catch (error) {
-        res.status.send({ error: error.message });
+        res.status(500).send({ error: error.message });
     }
 })
 
