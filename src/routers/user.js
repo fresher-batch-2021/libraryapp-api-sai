@@ -23,8 +23,7 @@ router.post('/addUser', async (req, res) => {
             try {
                 console.log(newUser);
                 UserService.save(newUser)
-                 res.status(201).send({ data: e, message: "Registered successful" })
-                    console.log(e);
+                 res.status(201).send({ message: "Registered successful" })
             } catch (err) {
                 console.error(err);
                 res.status(500).send({ error: err.message });
