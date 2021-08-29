@@ -44,7 +44,7 @@ router.get('/user-requests', async (req, res) => {
 router.patch('/add-count/:id', async (req, res) => {
     try {
         const addcount = await Request_book.findOne({ _id: req.params.id })
-        addcount.count += 1
+        addcount.requestedUsers += 1
         addcount.save()
         console.log(addcount)
         res.status(201).send('Added Your Request')
@@ -57,13 +57,13 @@ router.post('/add-count', async (req, res) => {
     console.log(request)
     const user = req.body.user_id
     console.log(user)
-    const newRequest = request.count.includes(user)
+    const newRequest = request.requestedUsers.includes(user)
     console.log(newRequest);
     if (newRequest === true) {
-        request.count.remove(user)
+        request.requestedUsers.remove(user)
     }
     else {
-        request.count.push(user)
+        request.requestedUsers.push(user)
     }
     try {
         await request.save();

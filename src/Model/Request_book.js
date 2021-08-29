@@ -10,7 +10,7 @@ const RequestSchema = new Schema({
         type:String,
         default:Date
     },
-    count:[{
+    requestedUsers:[{
         type:Schema.Types.ObjectId,
         ref:"user"
     }]
