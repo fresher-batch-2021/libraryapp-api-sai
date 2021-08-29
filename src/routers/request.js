@@ -27,7 +27,7 @@ router.post('/add-request', async (req, res) => {
 
 router.get('/all-requests', async (req, res) => {
     try {
-        const allRequests = await Request_book.find().populate('count','name')
+        const allRequests = await Request_book.find().populate('requestedUsers','name')
         res.status(200).send(allRequests);
     } catch (error) {
         res.status(500).send({ err: error.message })
