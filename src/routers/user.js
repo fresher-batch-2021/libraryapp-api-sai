@@ -52,7 +52,7 @@ router.post('/login', (req, res) => {
                     }
                     if (result) {
                         console.log(user.name)
-                        const userData = { user_id: user._id, name: user.name, email: user.email, userRole: user.role }
+                        const userData = { user_id: user._id, name: user.name, email: user.email, userRole: user.role,status:user.status }
                         console.log(userData);
 
                         res.json({ message: "login successful", userData });
