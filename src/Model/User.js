@@ -13,6 +13,9 @@ const UserSchema = new Schema({
     },
     role:{
         type:String,default:"user"
+    },
+    status:{
+          type:String,default:"notverified"
     }
 },{timestamps:true});
 module.exports = User = mongoose.model('user', UserSchema)

@@ -2,7 +2,8 @@ const express = require('express');
 const router = express.Router();
 const User = require("../Model/User");
 const bcrypt = require('bcryptjs');
-const UserService = require('../service/userService')
+const UserService = require('../service/userService');
+const { route } = require('./request');
 
 
 router.post('/addUser', async (req, res) => {
@@ -23,7 +24,7 @@ router.post('/addUser', async (req, res) => {
             try {
                 console.log(newUser);
                 UserService.save(newUser)
-                 res.status(201).send({ message: "Registered successful" })
+                res.status(201).send({ message: "Registered successful" })
             } catch (err) {
                 console.error(err);
                 res.status(500).send({ error: err.message });
@@ -80,5 +81,32 @@ router.get('/get-all-users', async (req, res) => {
     }
 })
 
+router.post('/verification', async (req, res) => {
+    try {
+        console.log(req.body)
+        const user = await User.findOne({ email: req.body.email })
+        console.log(user)
+        user.status=req.body.status
+        console.log(user)
+         await user.save()
+         res.status(201).send({message:"Verified"})
+    } catch (error) {
+        res.status(500).send({ error: error.message })
+    }
 
+})
+
+router.delete('/reject-user/:id',async(req,res)=>{
+    try {
+        const user = await User.findById({ _id: req.params.id })
+        if(!user){
+            res.json({message:"User Not Found"})
+            console.log(user)
+        }
+        user.remove()
+        res.send({message:"Rejected"});
+    } catch (error) {
+        res.status(500).send({error:error.message})
+    }
+})
 module.exports = router;
