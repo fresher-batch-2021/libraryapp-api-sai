@@ -20,7 +20,7 @@ router.post('/add-book', async (req, res) => {
 
 })
 
-router.post('/get-all-books', async (req, res) => {
+router.get('/get-all-books', async (req, res) => {
 	try {
 		let allBooks = await BookService.getAllBooks().sort({ createdAt: "desc" });
 		let active = req.query.status;

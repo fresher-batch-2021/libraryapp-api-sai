@@ -52,12 +52,12 @@ router.post('/login', (req, res) => {
                     }
                     if (result) {
                         console.log(user.name)
-                        const userData = { user_id: user._id, name: user.name, email: user.email, userRole: user.role,status:user.status }
+                        const userData = { user_id: user._id, name: user.name, email: user.email, userRole: user.role, status: user.status }
                         console.log(userData);
 
                         res.json({ message: "login successful", userData });
 
-                    } else {
+                    } else if (result.status === "notverified") {
                         res.json({
                             message: 'Invalid Password'
                         })
@@ -86,27 +86,27 @@ router.post('/verification', async (req, res) => {
         console.log(req.body)
         const user = await User.findOne({ email: req.body.email })
         console.log(user)
-        user.status=req.body.status
+        user.status = req.body.status
         console.log(user)
-         await user.save()
-         res.status(201).send({message:"Verified"})
+        await user.save()
+        res.status(201).send({ message: "Verified" })
     } catch (error) {
         res.status(500).send({ error: error.message })
     }
 
 })
 
-router.delete('/reject-user/:id',async(req,res)=>{
+router.delete('/reject-user/:id', async (req, res) => {
     try {
         const user = await User.findById({ _id: req.params.id })
-        if(!user){
-            res.json({message:"User Not Found"})
+        if (!user) {
+            res.json({ message: "User Not Found" })
             console.log(user)
         }
         user.remove()
-        res.send({message:"Rejected"});
+        res.send({ message: "Rejected" });
     } catch (error) {
-        res.status(500).send({error:error.message})
+        res.status(500).send({ error: error.message })
     }
 })
 module.exports = router;
