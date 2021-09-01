@@ -10,7 +10,7 @@ router.post('/add-book', async (req, res) => {
 	try {
 
 		await BookService.addBook(newbook);
-		res.status(201).send("Book Added Successfully");
+		res.status(201).send({infoMessage:"Book Added Successfully"});
 
 	}
 	catch (err) {
