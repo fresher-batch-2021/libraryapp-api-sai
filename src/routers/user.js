@@ -64,7 +64,7 @@ router.post('/login', (req, res) => {
                     }
                     else {
                         res.json({
-                            message: 'Invalid Password '
+                            message: 'Invalid Password'
                         })
                     }
                 })
