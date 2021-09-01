@@ -50,12 +50,16 @@ router.post('/login', (req, res) => {
                             error: err
                         })
                     }
-                    if (result && result.status === "verified") {
-                        console.log(user.name)
+                    console.log(result)
+
+                    if (result) {
                         const userData = { user_id: user._id, name: user.name, email: user.email, userRole: user.role, status: user.status }
                         console.log(userData);
-
-                        res.json({ message: "login successful", userData });
+                         if(userData.status==='verified'){
+                            res.json({ message: "login successful", userData });
+                         }else{
+                             res.json({message:'not verified'})
+                         }
 
                     }
                     else {
