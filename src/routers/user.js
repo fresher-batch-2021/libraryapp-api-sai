@@ -50,7 +50,7 @@ router.post('/login', (req, res) => {
                             error: err
                         })
                     }
-                    if (result&&result.status==="verified") {
+                    if (result && result.status === "verified") {
                         console.log(user.name)
                         const userData = { user_id: user._id, name: user.name, email: user.email, userRole: user.role, status: user.status }
                         console.log(userData);
@@ -60,7 +60,7 @@ router.post('/login', (req, res) => {
                     }
                     else {
                         res.json({
-                            message: 'Invalid Password'
+                            message: 'Not Verified '
                         })
                     }
                 })
