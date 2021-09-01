@@ -57,7 +57,7 @@ router.post('/login', (req, res) => {
 
                         res.json({ message: "login successful", userData });
 
-                    } else if (result.status === "notverified") {
+                    } else {
                         res.json({
                             message: 'Invalid Password'
                         })
