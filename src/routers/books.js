@@ -80,13 +80,13 @@ router.delete('/delete/:id', async (req, res) => {
 						if (orderDetails == null) {
 							console.log(o)
 							o.remove()
-							res.status(200).send('book deleted')
+							res.status(200).send({infoMessage:'book deleted'})
 						}
 						else if (orderDetails.status == 'ordered' || 'renewed') {
-							res.status(200).send('book has been ordered')
+							res.status(200).send({infoMessage:'book has been ordered'})
 							return false
 						} else {
-							res.status(500).send('book not found')
+							res.status(500).send({infoMessage:'book not found'})
 						}
 					}
 				})

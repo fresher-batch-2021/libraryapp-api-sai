@@ -94,7 +94,7 @@ router.post('/verification', async (req, res) => {
         user.status = req.body.status
         console.log(user)
         await user.save()
-        res.status(201).send({ message: "Verified" })
+        res.status(201).send({ infoMessage: "Verified" })
     } catch (error) {
         res.status(500).send({ error: error.message })
     }
@@ -105,7 +105,7 @@ router.delete('/reject-user/:id', async (req, res) => {
     try {
         const user = await User.findById({ _id: req.params.id })
         if (!user) {
-            res.json({ message: "User Not Found" })
+            res.json({ infoMessage: "User Not Found" })
             console.log(user)
         }
         user.remove()
